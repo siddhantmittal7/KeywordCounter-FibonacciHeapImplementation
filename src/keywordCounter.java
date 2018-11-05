@@ -9,7 +9,7 @@ public class keywordCounter {
 
         //String  pathtofile = args[0];
 
-        String  pathtofile = "/Users/siddhantmittal/ADSProject/src/input2.txt";
+        String  pathtofile = "/Users/siddhantmittal/ADSProject/src/input3.txt";
 
         HashMap<String,Node> keywordMap = new HashMap<String,Node>();
 
@@ -54,7 +54,10 @@ public class keywordCounter {
                     List<Node> listOfRemovedNode = new ArrayList<Node>();
 
                     for(int i=0;i<count;i++){
+                        fibonacciHeap.printRootList();
+                        System.out.println("removing max");
                         Node node =  fibonacciHeap.removeMax();
+                        fibonacciHeap.printRootList();
                         listOfRemovedNode.add(node);
                     }
 

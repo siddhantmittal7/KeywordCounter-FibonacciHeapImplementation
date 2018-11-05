@@ -1,279 +1,248 @@
-import java.util.*;
+public class FibonacciHeap {
 
-    public class FibonacciHeap {
-
-        private Node maxNode;
-        private int numberOfNodes;
-
-        /*
-        The following procedure inserts node x into Fibonacci heap H ,
-        assuming that the node has already been allocated and that
-        x:key has already been filled in.
-         */
-        public void insert(Node node) {
+    private Node maxNode;
+    private int numberOfNodes;
 
 
-            if (maxNode != null) {
+    public void insert(Node node){
 
-                node.left = maxNode;
-                node.right = maxNode.right;
-                maxNode.right = node;
-                node.right.left = node;
-
-                if (node.key > maxNode.key) {
-                    maxNode = node;
-                }
-            } else {
-                maxNode = node;
-            }
-
-            numberOfNodes++;
+        if(maxNode == null){
+            maxNode = node;
+        }else{
+            node.right = maxNode.right;
+            maxNode.right = node;
+            node.left = maxNode;
+            node.right.left = node;
         }
 
-        /*
+        if(node.key > maxNode.key){
+            maxNode = node;
+        }
+
+        numberOfNodes = numberOfNodes +1;
+    }
+
+    /*
         remove max works by first making a root out of each of the maximum node’s
         children and removing the maximum node from the root list. It then consolidates
         the root list by linking roots of equal degree until at most one root
         remains of each degree
-        */
-        public Node removeMax() {
-            Node z = maxNode;
-            if (z != null) {
-                int numberofChildren = z.degree;
-                Node x = z.child;
-                Node tempRight;
+    */
+    public Node removeMax(){
+        Node z = maxNode;
+        if(z != null){
+            int degree = maxNode.degree;
 
-                //each other of maximum node gets added to root list
-                while (numberofChildren > 0) {
-                    tempRight = x.right;
+            Node child = z.child;
+            Node nextNode;
 
-                    x.left.right = x.right;
-                    x.right.left = x.left;
+            //add all childern to the root list of H
+            while(degree > 0){
+                nextNode = child.right;
 
-                    x.left = maxNode;
-                    x.right = maxNode.right;
-                    maxNode.right = x;
-                    x.right.left = x;
-                    x.parent = null;
+                //removing child from children list
+                child.right.left = child.left;
+                child.left.right = child.right;
 
-                    x = tempRight;
-                    numberofChildren--;
-                }
+                //following the insert steps
+                child.right = maxNode.right;
+                maxNode.right = child;
+                child.left = maxNode;
+                child.right.left = child;
+                child.parent = null;
 
-
-                // remove z from root list of heap
-                z.left.right = z.right;
-                z.right.left = z.left;
-
-                if (z == z.right) {
-                    maxNode = null;
-
-                } else {
-                    maxNode = z.right; //any random node consolidate will take care
-                    consolidate();
-                }
-                numberOfNodes--;
-                return z;
-            }
-            return null;
-        }
-
-
-        //performs cut operation. Cuts x from y
-        public void cut(Node x, Node y) {
-            // removes x from child of y and decreases the degree of y
-            x.left.right = x.right;
-            x.right.left = x.left;
-            y.degree--;
-
-            // reset y.child if necessary
-            if (y.child == x) {
-                y.child = x.right;
+                child = nextNode;
+                degree--;
             }
 
-            if (y.degree == 0) {
-                y.child = null;
-            }
+            z.left.right = z.right;
+            z.right.left = z.left;
 
-            // add x to root list of heap
-            x.left = maxNode;
-            x.right = maxNode.right;
-            maxNode.right = x;
-            x.right.left = x;
-
-            // set parent of x to nil
-            x.parent = null;
-
-            // set mark to false
-            x.mark = false;
-        }
-
-        //Performs cascading cut on the given node as given in Cormen
-        public void cascadingCut(Node y) {
-            Node x = y.parent;
-
-            //if there is a parent
-            if (x != null) {
-                // if y is unmarked, set it marked
-                if (!y.mark) {
-                    y.mark = true;
-                } else {
-                    // it's marked, cut it from parent
-                    cut(y, x);
-
-                    // cut its parent as well
-                    cascadingCut(x);
-                }
+            if(z == z.right)
+                maxNode = null;
+            else{
+                maxNode = z.right;
+                consolidate();
             }
         }
+        return z;
+    }
 
-        //Increase the value of key for the given node in heap
-        public void increaseKey(Node x, int k) {
-            if (k < x.key) {
-            }
+    public void joinTrees(Node y, Node x){
 
-            x.key = k;
-
-            Node y = x.parent;
-
-            if ((y != null) && (x.key > y.key)) {
-                cut(x, y);
-                cascadingCut(y);
-            }
-
-            if (x.key > maxNode.key) {
-                maxNode = x;
-            }
+        y.right.left = y.left;
+        y.left.right = y.right;
+        y.parent = x;
+        if (x.child == null) {
+            x.child = y;
+            y.right = y;
+            y.left = y;
+        } else {
+            y.left = x.child;
+            y.right = x.child.right;
+            x.child.right = y;
+            y.right.left = y;
         }
+        x.degree = x.degree + 1;
+        y.mark = false;
+    }
+
+    public void consolidate(){
+
+        double fi = (1 + Math.sqrt(5))/2;
+
+        double s = Math.log(numberOfNodes)/Math.log(fi);
+        int sizeofDegreeTable = 2*(int) s + 1;
+
+        Node[] degreeArray = new Node[sizeofDegreeTable+2];
 
 
-        //performs degree wise merge(if 2 degrees are same then it merges it)
-        public void consolidate() {
-            //Maxium degree can be logn
-            double fi = (1 + Math.sqrt(5))/2;
+        int numRoots = 0;
+        Node x = maxNode;
 
-            double s = Math.log(numberOfNodes)/Math.log(fi);
-            int sizeofDegreeTable = 2*(int) s + 1;
+        if (x != null) {
+            numRoots++;
+            x = x.right;
 
-
-            List<Node> degreeTable =
-                    new ArrayList<Node>(sizeofDegreeTable);
-
-            // Initialize degree table
-            for (int i = 0; i < sizeofDegreeTable; i++) {
-                degreeTable.add(null);
-            }
-
-
-            // Find the number of root nodes.
-            int numRoots = 0;
-            Node x = maxNode;
-
-
-            if (x != null) {
+            while (x != maxNode) {
                 numRoots++;
                 x = x.right;
-
-                while (x != maxNode) {
-                    numRoots++;
-                    x = x.right;
-                }
-            }
-
-            // For each node in root list
-            while (numRoots > 0) {
-
-                int d = x.degree;
-                Node next = x.right;
-
-                // check if the degree is there in degree table, if not add,if yes then combine and merge
-                for (; ; ) {
-                    Node y = degreeTable.get(d);
-                    if (y == null) {
-                        break;
-                    }
-
-                    //Check whos key value is greater
-                    if (x.key < y.key) {
-                        Node temp = y;
-                        y = x;
-                        x = temp;
-                    }
-
-                    //make y the child of x as x key value is greater
-                    makeChild(y, x);
-
-                    //setthe degree to null as x and y are combined now
-                    degreeTable.set(d, null);
-                    d++;
-                }
-
-                //store the new x(x+y) in the respective degree table postion
-                degreeTable.set(d, x);
-
-                // Move forward through list.
-                x = next;
-                numRoots--;
-            }
-
-
-            //Deleting the max node
-            maxNode = null;
-
-            // combine entries of the degree table
-            for (int i = 0; i < sizeofDegreeTable; i++) {
-                Node y = degreeTable.get(i);
-                if (y == null) {
-                    continue;
-                }
-
-                //till max node is not null
-                if (maxNode != null) {
-
-                    // First remove node from root list.
-                    y.left.right = y.right;
-                    y.right.left = y.left;
-
-                    // Now add to root list, again.
-                    y.left = maxNode;
-                    y.right = maxNode.right;
-                    maxNode.right = y;
-                    y.right.left = y;
-
-                    // Check if this is a new maximum
-                    if (y.key > maxNode.key) {
-                        maxNode = y;
-                    }
-                } else {
-                    maxNode = y;
-                }
             }
         }
 
-        //Makes y the child of node x
-        public void makeChild(Node y, Node x) {
-            // remove y from root list of heap
-            y.left.right = y.right;
-            y.right.left = y.left;
+        while(numRoots>0){
+            int degree = x.degree;
+            Node next = x.right;
 
-            // make y a child of x
-            y.parent = x;
-
-            if (x.child == null) {
-                x.child = y;
-                y.right = y;
-                y.left = y;
-            } else {
-                y.left = x.child;
-                y.right = x.child.right;
-                x.child.right = y;
-                y.right.left = y;
+            while(degreeArray[degree] != null){
+                Node y = degreeArray[degree];
+                if(x.key < y.key){
+                    Node temp = y;
+                    y = x;
+                    x = temp;
+                }
+                joinTrees(y,x);
+                degreeArray[degree] = null;
+                degree = degree + 1;
             }
+            degreeArray[degree] = x;
+            numRoots--;
+            x = next;
+        }
 
-            // increase degree of x by 1
-            x.degree++;
+        maxNode = null;
 
-            // make mark of y as false
-            y.mark = false;
+        for(int i=0;i<degreeArray.length;i++){
+            Node z = degreeArray[i];
+            if(z != null){
+                //create a root list for H containing just AŒi􏰀
+                if(maxNode == null){
+                    maxNode = z;
+                    maxNode.left = z;
+                    maxNode.right = z;
+                }else{// insert AŒi 􏰀 into H ’s root list
+                    maxNode.right.left = z;
+                    z.right = maxNode.right;
+                    maxNode.right = z;
+                    z.left = maxNode;
+                    if(z.key > maxNode.key){
+                        maxNode = z;
+                    }
+                }
+            }
         }
     }
+
+
+    public void increaseKey(Node z, int k){
+        if(k < z.key){
+            System.out.println("attempted to decrease key");
+            return;
+        }
+        z.key = k;
+        Node p = z.parent;
+
+        if(p != null && z.key > p.key){
+            cut(z,p);
+            cascadingCut(p);
+        }
+
+        if(z.key > maxNode.key){
+            maxNode = z;
+        }
+    }
+
+    public void cut(Node child, Node parent){
+        //remove child from the child list of parent, decrementing parent:degree
+        //add child to the root list of H
+        // removes x from child of y and decreases the degree of y
+        child.left.right = child.right;
+        child.right.left = child.left;
+        parent.degree--;
+
+        // reset y.child if necessary
+        if (parent.child == child) {
+            parent.child = child.right;
+        }
+
+        if (parent.degree == 0) {
+            parent.child = null;
+        }
+
+        // add x to root list of heap
+        child.left = maxNode;
+        child.right = maxNode.right;
+        maxNode.right = child;
+        child.right.left = child;
+
+        // set parent of x to nil
+        child.parent = null;
+
+        // set mark to false
+        child.mark = false;
+    }
+
+    public void cascadingCut(Node z){
+        Node x = z.parent;
+
+        //if there is a parent
+        if (x != null) {
+            // if y is unmarked, set it marked
+            if (!z.mark) {
+                z.mark = true;
+            } else {
+                // it's marked, cut it from parent
+                cut(z, x);
+
+                // cut its parent as well
+                cascadingCut(x);
+            }
+        }
+    }
+
+    public void printRootList(){
+
+        int numRoots = 0;
+        Node x = maxNode;
+
+        if (x != null) {
+            numRoots++;
+            x = x.right;
+
+            while (x != maxNode) {
+                numRoots++;
+                x = x.right;
+            }
+        }
+
+        while(numRoots > 0){
+            Node next = x.right;
+            System.out.print(x.key + "--");
+            numRoots--;
+            x = next;
+        }
+        System.out.println();
+    }
+
+
+}
