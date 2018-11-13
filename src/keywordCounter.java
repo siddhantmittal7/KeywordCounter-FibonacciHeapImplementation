@@ -2,14 +2,16 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class keywordCounter {
 
     public static void main(String[] args){
 
-        //String  pathtofile = args[0];
+        String  pathtofile = args[0];
 
-        String  pathtofile = "/Users/siddhantmittal/ADSProject/src/input3.txt";
+        //String  pathtofile = "input6.txt";
 
         HashMap<String,Node> keywordMap = new HashMap<String,Node>();
 
@@ -28,10 +30,26 @@ public class keywordCounter {
 
             String s = br.readLine();
 
+            String keywordMatch = "([$])([a-z_]+)(\\s)(\\d+)";
+            String queryMatch = "(\\d+)";
+            String endMatch = "([stop])";
+
+            Pattern case1 = Pattern.compile(keywordMatch);
+            Pattern case2 = Pattern.compile(queryMatch);
+            Pattern case3 = Pattern.compile(endMatch);
+
             while(s != null){
                 String word = "";
                 int frequency = 0;
-                if(s.contains("$")){
+
+
+                Matcher result1 = case1.matcher(s);
+                Matcher result2 = case2.matcher(s);
+                Matcher result3 = case3.matcher(s);
+
+                if(result1.find()){
+                    word = result1.group(2);
+                    frequency = Integer.parseInt(result1.group(4));
                     s = s.substring(1,s.length());
                     String[] stringPara = s.split(" ");
                     word = stringPara[0];
@@ -46,19 +64,23 @@ public class keywordCounter {
                         keywordMap.put(word,node);
                     }
                 }
-                else if(s.equals("stop")){
-                    return;
-                }else{
-                    int count = Integer.valueOf(s);
+                else if(result3.find()){
+                    break;
+                }
+                else if(result2.find()){
+                    int count = Integer.valueOf(result2.group(1));
 
                     List<Node> listOfRemovedNode = new ArrayList<Node>();
 
                     for(int i=0;i<count;i++){
-                        fibonacciHeap.printRootList();
-                        System.out.println("removing max");
+                        //fibonacciHeap.printRootList();
+                        //System.out.println("removing max");
                         Node node =  fibonacciHeap.removeMax();
-                        fibonacciHeap.printRootList();
-                        listOfRemovedNode.add(node);
+                        if(node != null){
+                            keywordMap.remove(node.word);
+                            //fibonacciHeap.printRootList();
+                            listOfRemovedNode.add(node);
+                        }
                     }
 
                     for(int i=0;i<listOfRemovedNode.size();i++){
@@ -68,7 +90,11 @@ public class keywordCounter {
                         }else{
                             writer.write(node.word + ",");
                         }
-                        fibonacciHeap.insert(node);
+                        String wordNew = node.word;
+                        int freq = node.key;
+                        Node nodeNew = new Node(wordNew,freq);
+                        fibonacciHeap.insert(nodeNew);
+                        keywordMap.put(wordNew,nodeNew);
                     }
                     writer.newLine();
                 }

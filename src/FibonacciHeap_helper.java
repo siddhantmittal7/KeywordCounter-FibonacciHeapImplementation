@@ -1,6 +1,6 @@
 import java.util.*;
 
-    public class FibonacciHeap_ex {
+    public class FibonacciHeap_helper {
 
         private Node maxNode;
         private int numberOfNodes;
@@ -275,5 +275,29 @@ import java.util.*;
 
             // make mark of y as false
             y.mark = false;
+        }
+
+        public void printRootList(){
+
+            int numRoots = 0;
+            Node x = maxNode;
+
+            if (x != null) {
+                numRoots++;
+                x = x.right;
+
+                while (x != maxNode) {
+                    numRoots++;
+                    x = x.right;
+                }
+            }
+
+            while(numRoots > 0){
+                Node next = x.right;
+                System.out.print(x.key + "--");
+                numRoots--;
+                x = next;
+            }
+            System.out.println();
         }
     }

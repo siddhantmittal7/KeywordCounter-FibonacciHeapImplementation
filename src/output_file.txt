@@ -1,2 +1,2 @@
 amazon,facebook,gmail
-gmail,facebook,youtube,weather,
+gmail,facebook,ebay,amazon,playing

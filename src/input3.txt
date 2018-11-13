@@ -14,7 +14,5 @@ $playing 4
 $gmail 15
 $drawing 3
 $ebay 12
-$netflix 6
-$cnn 5
 5
 stop
