@@ -14,11 +14,11 @@
 $ make
 $ java keywordCounter input.txt
 ```
-- Just copy the two input files in this directory and replace input.txt with the new input file name
+- Just copy the two input files in this directory and replace input.txt with the new input file name. Or just provide the correct path of the input file instead of input.txt
 
 # Output format
 - Output will be printed in output_file.txt. 
--  Output for a query should be comma separated list without any new lines. Once the output for a query is finished you should put a new line to write the output for the next query
+- Output for a query should be comma separated list without any new lines. Once the output for a query is finished you should put a new line to write the output for the next query
 
 # Assumptions
 - Input keyword can be any arbitrary string including alphanumeric characters and special  symbols.
