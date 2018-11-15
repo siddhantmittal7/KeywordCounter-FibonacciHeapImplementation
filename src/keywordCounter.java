@@ -11,7 +11,7 @@ public class keywordCounter {
 
         String  pathtofile = args[0];
 
-        //String  pathtofile = "input6.txt";
+        //String  pathtofile = "/Users/siddhantmittal/Documents/ADS/Programing assignment/input4.txt";
 
         HashMap<String,Node> keywordMap = new HashMap<String,Node>();
 
@@ -25,14 +25,16 @@ public class keywordCounter {
         // try IOException and other unchecked exception
         try {
 
+            //Setting up of reading input file
             BufferedReader br = new BufferedReader(new FileReader(pathtofile));
             writer = new BufferedWriter( new FileWriter(file));
 
             String s = br.readLine();
 
-            String keywordMatch = "([$])([a-z_]+)(\\s)(\\d+)";
-            String queryMatch = "(\\d+)";
-            String endMatch = "([stop])";
+            //Various patterns to  match input
+            String keywordMatch = "([$])([^\\s]+)(\\s)(\\d+)";
+            String queryMatch = "(^\\d)";
+            String endMatch = "stop";
 
             Pattern case1 = Pattern.compile(keywordMatch);
             Pattern case2 = Pattern.compile(queryMatch);
@@ -47,6 +49,7 @@ public class keywordCounter {
                 Matcher result2 = case2.matcher(s);
                 Matcher result3 = case3.matcher(s);
 
+                //Case 1 match that is matching the keyword frequency match
                 if(result1.find()){
                     word = result1.group(2);
                     frequency = Integer.parseInt(result1.group(4));
@@ -55,19 +58,20 @@ public class keywordCounter {
                     word = stringPara[0];
                     frequency = Integer.valueOf(stringPara[1]);
 
+                    //if keyword already exist we increase the key of the exiting node
                     if(keywordMap.containsKey(word)){
                         Node node = keywordMap.get(word);
                         fibonacciHeap.increaseKey(node,frequency + node.key);
-                    }else{
+                    }else{ // else we insert a new node into the heap
                         Node node = new Node(word,frequency);
                         fibonacciHeap.insert(node);
                         keywordMap.put(word,node);
                     }
                 }
-                else if(result3.find()){
+                else if(result3.find()){//case 3 if we encounter a stop we terminate the program
                     break;
                 }
-                else if(result2.find()){
+                else if(result2.find()){//case 2 if a numeric number is found a query is executed
                     int count = Integer.valueOf(result2.group(1));
 
                     List<Node> listOfRemovedNode = new ArrayList<Node>();
@@ -83,6 +87,7 @@ public class keywordCounter {
                         }
                     }
 
+                    //reinserting the keyword back into the heap
                     for(int i=0;i<listOfRemovedNode.size();i++){
                         Node node = listOfRemovedNode.get(i);
                         if(i == listOfRemovedNode.size()-1){
@@ -90,6 +95,7 @@ public class keywordCounter {
                         }else{
                             writer.write(node.word + ",");
                         }
+                        //new node is created as we want to remove any previous history of the node
                         String wordNew = node.word;
                         int freq = node.key;
                         Node nodeNew = new Node(wordNew,freq);

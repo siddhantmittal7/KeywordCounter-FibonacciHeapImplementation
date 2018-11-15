@@ -1,7 +1,7 @@
 public class FibonacciHeap {
 
     private Node maxNode;
-    private int numberOfNodes;
+    private int numNodes;
 
 
     /*
@@ -23,7 +23,7 @@ public class FibonacciHeap {
             maxNode = node;
         }
 
-        numberOfNodes = numberOfNodes +1;
+        numNodes = numNodes +1;
     }
 
     /*
@@ -48,7 +48,7 @@ public class FibonacciHeap {
                 child.right.left = child.left;
                 child.left.right = child.right;
 
-                //following the insert steps
+                //following the insert steps into root list
                 child.right = maxNode.right;
                 maxNode.right = child;
                 child.left = maxNode;
@@ -61,7 +61,6 @@ public class FibonacciHeap {
 
             z.left.right = z.right;
             z.right.left = z.left;
-
             if(z == z.right)
                 maxNode = null;
             else{
@@ -69,7 +68,7 @@ public class FibonacciHeap {
                 consolidate();
             }
         }
-        numberOfNodes--;
+        numNodes--;
         return z;
     }
 
@@ -85,6 +84,7 @@ public class FibonacciHeap {
         y.right.left = y.left;
         y.left.right = y.right;
         y.parent = x;
+        //If no child exist
         if (x.child == null) {
             x.child = y;
             y.right = y;
@@ -105,7 +105,7 @@ public class FibonacciHeap {
         Consolidating the root list consists of repeatedly executing the following steps until
         every root in the root list has a distinct degree value:
         1. Find two roots x and y in the root list with the same degree. Without loss of generality, let x:key 􏰎 y:key.
-        2. FIB-HEAP-LINK procedure. This procedure increments the attribute x:degree and clears the mark on y.
+        2. joinTrees procedure. This procedure increments the attribute x:degree and clears the mark on y.
      */
 
     public void consolidate(){
@@ -113,7 +113,7 @@ public class FibonacciHeap {
         //maxium bound on the degree
         double fi = (1 + Math.sqrt(5))/2;
 
-        double s = Math.log(numberOfNodes)/Math.log(fi);
+        double s = Math.log(numNodes)/Math.log(fi);
         int sizeofDegreeTable = 2*(int) s + 1;
 
         //auxiliary array storing degrees
@@ -123,16 +123,13 @@ public class FibonacciHeap {
         int numRoots = 0;
         Node x = maxNode;
 
-        if (x != null) {
+        //calculating the number of nodes in the root list
+        do {
             numRoots++;
             x = x.right;
+        }while(x !=maxNode);
 
-            while (x != maxNode) {
-                numRoots++;
-                x = x.right;
-            }
-        }
-
+        //degree wise combine
         while(numRoots>0){
             int degree = x.degree;
             Node next = x.right;
@@ -155,6 +152,7 @@ public class FibonacciHeap {
 
         maxNode = null;
 
+        //finding the max node and creating the root list
         for(int i=0;i<degreeArray.length;i++){
             Node z = degreeArray[i];
             if(z != null){
@@ -201,18 +199,18 @@ public class FibonacciHeap {
     }
 
     /*
-        Removing the key if its key increases more than its root
+        Removing the node if its key increases more than its root
      */
 
     public void cut(Node child, Node parent){
         //remove child from the child list of parent, decrementing parent:degree
         //add child to the root list of H
-        // removes x from child of y and decreases the degree of y
+        // removes child from child pointer of parent and decreases the degree
         child.left.right = child.right;
         child.right.left = child.left;
         parent.degree--;
 
-        // reset y.child if necessary
+        // reset parents child pointer to it's other child if necessary
         if (parent.child == child) {
             parent.child = child.right;
         }
@@ -221,16 +219,12 @@ public class FibonacciHeap {
             parent.child = null;
         }
 
-        // add x to root list of heap
+        // add child to root list of heap
         child.left = maxNode;
         child.right = maxNode.right;
         maxNode.right = child;
         child.right.left = child;
-
-        // set parent of x to nil
         child.parent = null;
-
-        // set mark to false
         child.mark = false;
     }
 
@@ -251,16 +245,11 @@ public class FibonacciHeap {
     public void cascadingCut(Node z){
         Node x = z.parent;
 
-        //if there is a parent
         if (x != null) {
-            // if y is unmarked, set it marked
             if (!z.mark) {
                 z.mark = true;
             } else {
-                // it's marked, cut it from parent
                 cut(z, x);
-
-                // cut its parent as well
                 cascadingCut(x);
             }
         }
@@ -275,15 +264,10 @@ public class FibonacciHeap {
         int numRoots = 0;
         Node x = maxNode;
 
-        if (x != null) {
+        do {
             numRoots++;
             x = x.right;
-
-            while (x != maxNode) {
-                numRoots++;
-                x = x.right;
-            }
-        }
+        }while(x !=maxNode);
 
         while(numRoots > 0){
             Node next = x.right;

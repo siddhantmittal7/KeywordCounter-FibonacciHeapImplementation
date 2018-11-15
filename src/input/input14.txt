@@ -1,0 +1,14 @@
+$robin 9
+$facebook 8
+$gmail 7
+$amazon 6
+$zoot 5
+$ebay 4
+$news 3
+$mosby 2
+$barney 1
+1
+$news 6
+$mosby 10
+3
+stop
