@@ -7,6 +7,15 @@
 
 - Main directory contains Project Problem statement pdf, this report pdf, program files, make file and test input files
 
+# Code Environment
+
+- The project is written in java using a following jdk
+java 10.0.2 2018-07-17
+Java(TM) SE Runtime Environment 18.3 (build 10.0.2+13)
+Java HotSpot(TM) 64-Bit Server VM 18.3 (build 10.0.2+13, mixed mode)
+
+- Also the program is tested on thunder.cise.ufl.edu environment
+
 # Instructions for running the code
 - After unziping the mittal_siddhant.zip  
 - All the program files are under the zip folder
