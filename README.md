@@ -38,10 +38,11 @@ $ java keywordCounter input.txt
 - If there are more than one keyword with similar frequencies, you can print them in any order.
 - Query integer 𝑛 ≤ 20. i.e. you need to find at most 20 popular keywords.
 - Input file may consist of more than 1 million keywords.
+- Keyword match is case sensitive. That is keyword  youtube and Youtube are different.
+- All the alphanumeric inputs will work that means program won't terminate. It will only read the valid strings from the input file.
+- Tried to remove all the boundary conditions. 
 
-
-
-
+# Program Strucutre
 # Classes
 - Node: node.java is the class which stores the information about a keyword
 
