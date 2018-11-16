@@ -42,6 +42,12 @@ $ java keywordCounter input.txt
 - All the alphanumeric inputs will work that means program won't terminate. It will only read the valid strings from the input file.
 - Tried to remove all the boundary conditions. 
 
+# Testing and Program performance
+- Program was tested on provided input(the one in the problem statement).
+- More 15 test cases was created which is inside input folder. These test cases include major functionality tests and boundary condition checks.
+- Two special 1 million test cases were checked.
+- First, where I copy pasted the given input a million times. It worked within milli-secs.
+- Second, since above case have 1 million input but the nodes are less than 10 hence cascading cut is not being performed and hence we are not fully exploiting fibonacci heap. So I created a program which randomly creates 1/3 million new nodes and then copy paste it three times to call increase key functionality too. It worked beautifully showing how fibonacci heap amortized complexity is so good.
 # Program Strucutre
 # Classes
 - Node: node.java is the class which stores the information about a keyword
